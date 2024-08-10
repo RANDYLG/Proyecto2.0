@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../img/IUB.png">
+    <title>Datos Empresa</title>
+    <link rel="stylesheet" href="../css/bootstrap.css">
+    <link rel="stylesheet" href="../css/interactive.css">
+</head>
+<body class="bg-light">
+    <header class="mb-4">
+        <!-- menú horizontal -->
+        <div class="container">
+            <nav class="navbar navbar-expand-lg bg-body-tertiary">
+                <div class="container-fluid bg-primary">
+                    <span class="navbar-text d-flex h5" id="nombreUsuario" class="fw-bold">Hola</span>
+                    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                        <ul class="navbar-nav">
+                            <li class="nav-item">
+                                <a class="nav-link active nav-hover" aria-current="page" href="#" id="inicioBtn"> Inicio </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link active nav-hover" aria-current="page" id="empresaBtn" href="#"> Empresa </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link active nav-hover" aria-current="page" href="#" id="publicarOfertasBtn"> Publicar Ofertas </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link active nav-hover" aria-current="page" id="cerrarSesionBtn" href="#"> Cerrar Sesión </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <h2 class="mb-4">Formulario de Empresa</h2>
+        <form id="empresaForm">
+            <div class="mb-3">
+                <label for="formaJuridica" class="form-label">Forma Jurídica</label>
+                <select id="formaJuridica" class="form-select" required>
+                    <option value="">Seleccionar...</option>
+                    <option value="Empresa Individual">Empresa Individual (o Empresario Individual)</option>
+                    <option value="Sociedad Anónima">Sociedad Anónima (S.A.)</option>
+                    <option value="Sociedad de Responsabilidad Limitada">Sociedad de Responsabilidad Limitada(S.R.L. o S.L.)</option>
+                    <option value="Sociedad Colectiva">Sociedad Colectiva</option>
+                    <option value="Sociedad Comanditaria">Sociedad Comanditaria</option>
+                    <option value="Comunidad de Bienes">Comunidad de Bienes</option>
+                    <option value="Asociaciones sin ánimo de lucro">Asociaciones sin ánimo de lucro</option>
+                    <option value="Sociedad por Acciones Simplificada">Sociedad por Acciones Simplificada (S.A.S.)</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="nombreEmpresa" class="form-label">Nombre Completo de la Empresa</label>
+                <input type="text" id="nombreEmpresa" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="nit" class="form-label">Número de Identificación Tributaria (NIT)</label>
+                <input type="text" id="nit" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="descripcion" class="form-label">Descripción</label>
+                <textarea id="descripcion" class="form-control" rows="4" required></textarea>
+            </div>
+            <div class="mb-3">
+                <button type="button" class="btn btn-primary" onclick="guardarEmpresa()">Guardar</button>
+            </div>
+        </form>
+    </div>
+
+    <footer class="bg-dark text-white py-3 mt-auto">
+        <div class="container text-center">
+            <a href="https://www.unibarranquilla.edu.co/" class="text-white text-decoration-none">Unibarranquilla</a> |
+            <a href="https://www.unibarranquilla.edu.co/academia/portales-academicos/practicas-profesionales" class="text-white text-decoration-none">Prácticas Profesionales</a> |
+            <a href="link3.html" class="text-white text-decoration-none">PQRSD</a>
+        </div>
+    </footer>
+
+    <script src="../js/pgnEmpresa.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+.nav-hover {
+    transition: color 0.3s, background-color 0.3s;
+}
+
+.nav-hover:hover {
+    color: #fff; /* Cambia el color del texto al pasar el mouse */
+    background-color: #0056b3; /* Cambia el color de fondo al pasar el mouse */
+    border-radius: 5px; /* Opcional: agrega un borde redondeado */
+}

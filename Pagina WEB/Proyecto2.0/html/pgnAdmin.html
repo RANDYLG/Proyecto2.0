@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../img/IUB.png">
+    <title>Pagina Administrador</title>
+    <link rel="stylesheet" href="../css/bootstrap.css">
+    <link rel="stylesheet" href="../css/interactive.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap5.min.css">
+</head>
+<body class="bg-light">
+    <header class="mb-4">
+        <div class="container">
+            <nav class="navbar navbar-expand-lg bg-body-tertiary">
+                <div class="container-fluid bg-primary">
+                    <span class="navbar-text d-flex h5" id="nombreUsuario" class="fw-bold">Hola</span>
+                    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                        <ul class="navbar-nav">
+                            <li class="nav-item">
+                                <a class="nav-link active nav-hover" aria-current="page" id="inicioBtn" href="#"> Usuarios </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link active nav-hover" aria-current="page" id="graficasBtn" href="#"> Graficas </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link active nav-hover" aria-current="page" id="cerrarSesionBtn" href="#"> Cerrar Sesión </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-6">
+                <select id="filtro" class="form-select">
+                    <option value="todos">Todos</option>
+                    <option value="estudiante">Estudiantes</option>
+                    <option value="empresa">Empresas</option>
+                </select>
+            </div>
+            <div class="col-6 text-end">
+                <button id="descargarReporteBtn" class="btn btn-primary">Descargar Reporte</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <table id="usuariosTable" class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Usuario</th>
+                            <th>Tipo de Usuario</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usuariosTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal fade" id="editarUsuarioModal" tabindex="-1" aria-labelledby="editarUsuarioModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editarUsuarioModalLabel">Editar Usuario</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editarUsuarioForm">
+                        <input type="hidden" id="editarUsuario">
+                        <input type="hidden" id="editarTipoUsuario">
+                        <div class="mb-3">
+                            <label for="editarNombre" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="editarNombre" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editarPassword" class="form-label">Contraseña</label>
+                            <input type="password" class="form-control" id="editarPassword" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Actualizar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="descargarReporteModal" tabindex="-1" aria-labelledby="descargarReporteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="descargarReporteModalLabel">Descargar Reporte</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="filtroReporteForm">
+                        <div class="mb-3">
+                            <label for="filtroNombre" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="filtroNombre">
+                        </div>
+                        <div class="mb-3">
+                            <label for="filtroUsuario" class="form-label">Usuario</label>
+                            <input type="text" class="form-control" id="filtroUsuario">
+                        </div>
+                        <div class="mb-3">
+                            <label for="filtroFecha" class="form-label">Fecha de Creación</label>
+                            <input type="date" class="form-control" id="filtroFecha">
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <div>
+                                <button type="button" id="descargarPDFBtn" class="btn btn-primary">Descargar PDF</button>
+                                <button type="button" id="descargarExcelBtn" class="btn btn-success">Descargar Excel</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap5.min.js"></script>
+    <script src="../js/bootstrap.bundle.min.js"></script>
+    <script src="../js/pgnAdmin.js"></script>
+    <script src="../js/descargarReporte.js"></script>
+</body>
+</html>
+
+

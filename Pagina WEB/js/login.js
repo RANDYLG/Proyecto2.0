@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
 
     regresarBtn.addEventListener('click', () => {
-        window.location.href = '../principal.html';
+        window.location.href = '../index.html';
     });
     
 

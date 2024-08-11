@@ -1,10 +1,10 @@
 
 const redirectToLogin = () => {
-    location.href = '../Pagina WEB/html/login.html'; 
+    location.href = '../WEB/html/login.html'; 
 };
 
 const redirectToRegister = () => {
-    location.href = '../Pagina WEB/html/registrarce.html';
+    location.href = '../WEB/html/registrarce.html';
 };
 
 document.addEventListener('DOMContentLoaded', () => {

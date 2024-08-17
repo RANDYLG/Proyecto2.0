@@ -35,6 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('formularioEdicion').style.display = 'none';
         });
     }
+    
 
     cargarGraficas();
 });

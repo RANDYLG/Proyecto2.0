@@ -26,6 +26,19 @@
                             <li class="nav-item">
                                 <a class="nav-link active nav-hover" aria-current="page" id="cerrarSesionBtn" href="#"></a>
                             </li>
+                            <!-- <li class="nav-item">
+                                <select class="form-select me-2" id="seleccionGrafica">
+                                    <option value="todas">Todas</option>
+                                    <option value="usuariosChart">Usuarios</option>
+                                    <option value="formasJuridicasChart">Formas Jurídicas</option>
+                                    <option value="requisitosChart">Requisitos</option>
+                                    <option value="ofertasMesChart">Ofertas por Mes</option>
+                                    <option value="nivelrequisitosChart">Niveles Requisitos</option>
+                                </select>
+                            </li>
+                            <li class="nav-item">
+                                <button class="btn btn-secondary" id="descargarReporteBtn">Descargar Reporte</button>
+                            </li> -->
                         </ul>
                     </div>
                 </div>
@@ -80,17 +93,22 @@
             <div class="col-lg-4">
                 <canvas id="usuariosChart" width="90" height="90"></canvas>
             </div>
-            <div class="col-lg-6">
-                <canvas id="ofertasMesChart" width="50" height="50"></canvas>
+            <div class="col-lg-5">
+                <canvas id="ofertasMesChart" width="20" height="20"></canvas>
             </div>
-            <div class="col-lg-6">
-                <canvas id="requisitosChart" width="50" height="50"></canvas>
+            <div class="col-lg-2">
+                <!-- <canvas id="requisitosChart" width="20" height="20"></canvas> -->
+            </div>
+            <div class="col-lg-5">
+                <canvas id="requisitosChart" width="20" height="20"></canvas>
             </div>
         </div>
     </div>
     <script src="../js/graficas.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="../js/indicadores.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
 </body>
 </html>
 

@@ -17,6 +17,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const detallesUbicacion = document.getElementById('detallesUbicacion');
     const detallesFechaPublicacion = document.getElementById('detallesFechaPublicacion');
 
+    const token = localStorage.getItem('token');
+    if (!token) {
+        alert('No has iniciado sesión');
+        window.location.href = '../html/login.html';
+        return;
+    }
+
     const cargarOfertas = () => {
         const busqueda = busquedaInput.value.toLowerCase();
         const nivelAcademico = nivelAcademicoSelect.value;
@@ -95,16 +102,33 @@ document.addEventListener('DOMContentLoaded', () => {
         // Cerrar sesión
         cerrarSesionBtn.addEventListener('click', () => {
             localStorage.removeItem('usuario');
+            localStorage.removeItem('token');
             alert('Se está cerrando la sesión');
             window.location.href = '../html/login.html';
         });
+
+        let inactividadTimeout;
+        const tiempoInactividad = 60000;
+
+        const resetearInactividad = () => {
+            clearTimeout(inactividadTimeout);
+            inactividadTimeout = setTimeout(() => {
+                alert('Has sido desconectado por inactividad.');
+                localStorage.removeItem('usuario');
+                localStorage.removeItem('token');
+                window.location.href = '../html/login.html';
+            }, tiempoInactividad);
+        };
+
+        document.onmousemove = resetearInactividad;
+        document.onkeypress = resetearInactividad;
+        resetearInactividad();
 
 
         buscarOfertasBtn.addEventListener('click', cargarOfertas);
         busquedaInput.addEventListener('input', cargarOfertas);
         nivelAcademicoSelect.addEventListener('change', cargarOfertas);
     }
-
     cargarOfertas();
 });
 

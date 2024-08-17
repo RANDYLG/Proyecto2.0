@@ -7,28 +7,56 @@ document.addEventListener('DOMContentLoaded', () => {
     const nombreUsuarioSpan = document.getElementById('nombreUsuario');
     const usuario = JSON.parse(localStorage.getItem('usuario')); 
 
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+        alert('No has iniciado sesión');
+        window.location.href = '../html/login.html';
+        return;
+    }
+
     if (usuario) {
         // Mostrar el nombre del usuario en la página
         nombreUsuarioSpan.textContent = `Bienvenido(a), ${usuario.nombre}`;
+
+        inicioBtn.addEventListener('click', () => {
+            window.location.href = '../html/pgnEmpresa.html';
+        });
+    
+        cerrarSesionBtn.addEventListener('click', () => {
+            localStorage.removeItem('usuario');
+            localStorage.removeItem('token');
+            alert('Se está cerrando la sesión');
+            window.location.href = '../html/login.html';
+        });
+    
+        empresaBtn.addEventListener('click', () =>{
+            window.location.href = '../html/pgnEmpresa_empresa.html';
+        })
+    
+        publicarOfertasBtn.addEventListener('click', () =>{
+            window.location.href = '../html/pgnEmpresa_publicarOferta.html';
+        })
+
+        let inactividadTimeout;
+        const tiempoInactividad = 60000;
+
+        const resetearInactividad = () => {
+            clearTimeout(inactividadTimeout);
+            inactividadTimeout = setTimeout(() => {
+                alert('Has sido desconectado por inactividad.');
+                localStorage.removeItem('usuario');
+                localStorage.removeItem('token');
+                window.location.href = '../html/login.html';
+            }, tiempoInactividad);
+        };
+
+        document.onmousemove = resetearInactividad;
+        document.onkeypress = resetearInactividad;
+        resetearInactividad();
     }
 
-    inicioBtn.addEventListener('click', () => {
-        window.location.href = '../html/pgnEmpresa.html';
-    });
-
-    cerrarSesionBtn.addEventListener('click', () => {
-        localStorage.removeItem('usuario');
-        alert('Se está cerrando la sesión');
-        window.location.href = '../html/login.html';
-    });
-
-    empresaBtn.addEventListener('click', () =>{
-        window.location.href = '../html/pgnEmpresa_empresa.html';
-    })
-
-    publicarOfertasBtn.addEventListener('click', () =>{
-        window.location.href = '../html/pgnEmpresa_publicarOferta.html';
-    })
+    
 });
 
 const guardarEmpresa = () => {

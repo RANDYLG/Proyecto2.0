@@ -2,27 +2,56 @@ document.addEventListener('DOMContentLoaded', () => {
     const cerrarSesionBtn = document.getElementById('cerrarSesionBtn');
     const nombreUsuarioSpan = document.getElementById('nombreUsuario'); 
     const usuario = JSON.parse(localStorage.getItem('usuario'));
+    const graficasBtn = document.getElementById('graficasBtn');
+    const token = localStorage.getItem('token');
+    const inicioBtn = document.getElementById('inicioBtn');
+
+    if (!token) {
+        alert('No has iniciado sesión');
+        window.location.href = '../html/login.html';
+        return;
+    }
 
     if (usuario) {
         nombreUsuarioSpan.textContent = `Bienvenido, ${usuario.nombre}`;
+
+        inicioBtn.addEventListener('click', () => {
+            window.location.href = '../html/pgnAdmin.html';
+        });
+
+        graficasBtn.addEventListener('click', () => {
+            window.open('../html/pgnAdmin_graficas.html', '_blank');
+        });
+
+        cerrarSesionBtn.addEventListener('click', () => {
+            localStorage.removeItem('usuario');
+            localStorage.removeItem('token');
+            alert('Se está cerrando la sesión');
+            window.location.href = '../html/login.html';
+        });
+
+        let inactividadTimeout;
+        const tiempoInactividad = 60000;
+
+        const resetearInactividad = () => {
+            clearTimeout(inactividadTimeout);
+            inactividadTimeout = setTimeout(() => {
+                alert('Has sido desconectado por inactividad.');
+                localStorage.removeItem('usuario');
+                localStorage.removeItem('token');
+                window.location.href = '../html/login.html';
+            }, tiempoInactividad);
+        };
+
+        document.onmousemove = resetearInactividad;
+        document.onkeypress = resetearInactividad;
+        resetearInactividad();
     }
 
-    cerrarSesionBtn.addEventListener('click', () => {
-        localStorage.removeItem('usuario');
-        alert('Se está cerrando la sesión');
-        window.location.href = '../html/login.html';
-    });
-
-    const inicioBtn = document.getElementById('inicioBtn');
-    inicioBtn.addEventListener('click', () => {
-        window.location.href = '../html/pgnAdmin.html';
-
-    });
-
-    const graficasBtn = document.getElementById('graficasBtn');
-    graficasBtn.addEventListener('click', () => {
-        window.open('../html/pgnAdmin_graficas.html', '_blank');
-    });
+    // const reporteBtn = document.getElementById('reporteBtn');
+    // reporteBtn.addEventListener('click', () => {
+    //     window.location.href = '../html/pgnAdmin_descargarReporte.html';
+    // });
 
     const filtro = document.getElementById('filtro');
     if (filtro) {

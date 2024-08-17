@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify, send_file
+import openpyxl
 from flask_mysqldb import MySQL
 from fpdf import FPDF
 from io import BytesIO
@@ -8,6 +9,8 @@ import bcrypt
 import json
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
+from datetime import timedelta
+import base64
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
@@ -19,8 +22,9 @@ app.config['MYSQL_PASSWORD'] = ''
 app.config['MYSQL_DB'] = 'gestion_practicas'
 
 app.config['JWT_SECRET_KEY'] = 'your_jwt_secret_key'
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes=1)
 jwt = JWTManager(app)
-CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})
+CORS(app, supports_credentials=True, resources={r"/*": {"origins": "http://localhost"}})
 
 mysql = MySQL(app)
 
@@ -90,6 +94,15 @@ def login():
     except Exception as e:
         return jsonify({'message': str(e), 'success': False}), 500
 
+@app.route('/protected', methods=['GET'])
+@jwt_required()
+def protected():
+    try:
+        current_user = get_jwt_identity()
+        return jsonify(logged_in_as=current_user), 200
+    except Exception as e:
+        return jsonify({'message': str(e), 'success': False}), 500
+
 # mi Formulario de hoja de vida
 @app.route('/guardar_formulario', methods=['POST'])
 def guardar_formulario():
@@ -133,7 +146,7 @@ def guardar_formulario():
 
         return jsonify({'message': 'Formulario guardado correctamente'})
     except Exception as e:
-        print("Error:", str(e))  # Imprime el error para depuración
+        print("Error:", str(e))
         return jsonify({'message': str(e), 'success': False}), 500
 
 # cargar usuarios para mi admin
@@ -149,55 +162,63 @@ def get_all_users():
         return jsonify({'message': str(e), 'success': False}), 500
 
 # descargar mis reportes 
-@app.route('/descargar_reporte', methods=['POST'])
-def descargar_reporte():
+@app.route('/generar_reporte', methods=['POST'])
+def generar_reporte():
     try:
         data = request.json
-        filtro = data.get('filtro')
-        fecha_inicio = data.get('fecha_inicio')
-        fecha_fin = data.get('fecha_fin')
+        nombre = data.get('nombre', '')
+        usuario = data.get('usuario', '')
+        tipo_usuario = data.get('tipo_usuario', '')
         formato = data.get('formato')
 
-        query = "SELECT * FROM {} WHERE 1=1".format(filtro)
-        if fecha_inicio:
-            query += " AND fecha >= '{}'".format(fecha_inicio)
-        if fecha_fin:
-            query += " AND fecha <= '{}'".format(fecha_fin)
+        if not formato:
+            return jsonify({"message": "El formato es requerido"}), 400
 
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute(query)
+        cursor.execute('SELECT ID_empresa as ID, Nombre, Usuario, Tipo_usuario FROM empresa UNION ALL SELECT ID_estudiante as ID, Nombre, Usuario, Tipo_usuario FROM estudiante')
         resultados = cursor.fetchall()
+        cursor.close()
 
-        if formato == 'pdf':
+        if len(resultados) == 0:
+            return jsonify({"message": "No se encontraron resultados", "resultados": 0}), 200
+
+        print("Resultados encontrados:", resultados)
+
+        if formato == 'PDF':
             pdf = FPDF()
             pdf.add_page()
             pdf.set_font("Arial", size=12)
+            pdf.cell(200, 10, txt="Reporte de Usuarios", ln=True, align='C')
 
             for row in resultados:
-                pdf.cell(200, 10, txt="Reporte de {}".format(filtro.capitalize()), ln=True, align='C')
-            for row in resultados:
                 for key, value in row.items():
-                    pdf.cell(200, 10, txt="{}: {}".format(key, value), ln=True)
-                    pdf.cell(200, 10, txt=" ", ln=True)
+                    pdf.cell(200, 10, txt=f"{key}: {value}", ln=True)
+                pdf.cell(200, 10, txt=" ", ln=True)
 
             pdf_output = BytesIO()
             pdf.output(pdf_output)
             pdf_output.seek(0)
-            return send_file(pdf_output, attachment_filename="reporte.pdf", as_attachment=True)
+            pdf_base64 = base64.b64encode(pdf_output.read()).decode('utf-8')
 
-        elif formato == 'excel':
+            return jsonify({"archivo_base64": pdf_base64, "formato": "PDF", "resultados": len(resultados)})
+
+        elif formato == 'Excel':
             df = pd.DataFrame(resultados)
             excel_output = BytesIO()
-            writer = pd.ExcelWriter(excel_output, engine='openpyxl')
-            df.to_excel(writer, index=False, sheet_name='Reporte')
-            writer.save()
+            with pd.ExcelWriter(excel_output, engine='openpyxl') as writer:
+                df.to_excel(writer, index=False, sheet_name='Reporte')
+
             excel_output.seek(0)
-            return send_file(excel_output, attachment_filename="reporte.xlsx", as_attachment=True)
+            excel_base64 = base64.b64encode(excel_output.read()).decode('utf-8')
+
+            return jsonify({"archivo_base64": excel_base64, "formato": "Excel", "resultados": len(resultados)})
 
         return jsonify({"message": "Formato no soportado"}), 400
 
     except Exception as e:
+        print("Error en /generar_reporte:", str(e))  # Para ver en la consola de VSCode
         return jsonify({"error": str(e)}), 500
+
 
 # mi editar
 @app.route('/editar_usuario', methods=['PUT'])
@@ -526,123 +547,7 @@ def count_empresas_by_forma_juridica():
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({"success": False, "message": "Ocurrió un error al obtener las formas jurídicas."})
-# ///////////////////////////
-
-# @app.route('/countPracticasByStatus', methods=['GET'])
-# def count_practicas_by_status():
-#     try:
-#         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-#         cursor.execute('''
-#             SELECT estado, COUNT(*) as cantidad 
-#             FROM practicas 
-#             GROUP BY estado
-#         ''')
-#         result = cursor.fetchall()
-#         cursor.close()
-#         return jsonify(result)
-#     except Exception as e:
-#         return jsonify({'message': str(e), 'success': False}), 500
-
-@app.route('/countPracticasByCompany', methods=['GET'])
-def count_practicas_by_company():
-    try:
-        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('''
-            SELECT empresa_id, COUNT(*) as cantidad 
-            FROM practicas 
-            GROUP BY empresa_id
-        ''')
-        result = cursor.fetchall()
-        cursor.close()
-        return jsonify(result)
-    except Exception as e:
-        return jsonify({'message': str(e), 'success': False}), 500
-
-@app.route('/countPracticasByStudent', methods=['GET'])
-def count_practicas_by_student():
-    try:
-        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('''
-            SELECT estudiante_id, COUNT(*) as cantidad 
-            FROM practicas 
-            GROUP BY estudiante_id
-        ''')
-        result = cursor.fetchall()
-        cursor.close()
-        return jsonify(result)
-    except Exception as e:
-        return jsonify({'message': str(e), 'success': False}), 500
-
-@app.route('/getPracticasByCompany', methods=['GET'])
-def get_practicas_by_company():
-    try:
-        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('''
-            SELECT empresa_id, estado, COUNT(*) as cantidad 
-            FROM practicas 
-            GROUP BY empresa_id, estado
-        ''')
-        result = cursor.fetchall()
-        cursor.close()
-        return jsonify(result)
-    except Exception as e:
-        return jsonify({'message': str(e), 'success': False}), 500
-
-@app.route('/getPracticasByStudent', methods=['GET'])
-def get_practicas_by_student():
-    try:
-        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('''
-            SELECT estudiante_id, estado, COUNT(*) as cantidad 
-            FROM practicas 
-            GROUP BY estudiante_id, estado
-        ''')
-        result = cursor.fetchall()
-        cursor.close()
-        return jsonify(result)
-    except Exception as e:
-        return jsonify({'message': str(e), 'success': False}), 500
-
-@app.route('/getPracticasByMonth', methods=['GET'])
-def get_practicas_by_month():
-    try:
-        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('''
-            SELECT MONTH(fecha_inicio) as mes, COUNT(*) as cantidad 
-            FROM practicas 
-            GROUP BY mes
-        ''')
-        result = cursor.fetchall()
-        cursor.close()
-        return jsonify(result)
-    except Exception as e:
-        return jsonify({'message': str(e), 'success': False}), 500
+# /////////////////////////// 
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-
-# Ruta para el login
-@app.route('/login', methods=['POST'])
-def login():
-    try:
-        usuario = request.json['usuario']
-        password = request.json['password']
-
-        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('SELECT * FROM empresa WHERE Usuario = %s UNION SELECT * FROM estudiante WHERE Usuario = %s UNION SELECT * FROM administrador WHERE Usuario = %s', (usuario, usuario, usuario))
-        account = cursor.fetchone()
-        
-        if account and bcrypt.checkpw(password.encode('utf-8'), account['Password'].encode('utf-8')):
-            access_token = create_access_token(identity={'usuario': account['Usuario'], 'tipo_usuario': account['Tipo_usuario']})
-            return jsonify({'access_token': access_token, 'message': 'Login exitoso', 'success': True}), 200
-        else:
-            return jsonify({'message': 'Usuario o contraseña incorrectos', 'success': False}), 401
-    except Exception as e:
-        return jsonify({'message': str(e), 'success': False}), 500
-
-@app.route('/protected', methods=['GET'])
-@jwt_required()
-def protected():
-    current_user = get_jwt_identity()
-    return jsonify(logged_in_as=current_user), 200

@@ -90,6 +90,7 @@
         </div>
     </div>
 
+    <!-- Modal de descarga de reporte -->
     <div class="modal fade" id="descargarReporteModal" tabindex="-1" aria-labelledby="descargarReporteModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -100,6 +101,15 @@
                 <div class="modal-body">
                     <form id="filtroReporteForm">
                         <div class="mb-3">
+                            <!-- filtra para reducir los datos a descargar del reporte si no, descargar todo -->
+                            <label for="filtroTipoUsuario" class="form-label">Tipo de Usuario</label>
+                            <select id="filtroTipoUsuario" class="form-select">
+                                <option value="todos">Todos</option>
+                                <option value="empresa">Empresa</option>
+                                <option value="estudiante">Estudiante</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
                             <label for="filtroNombre" class="form-label">Nombre</label>
                             <input type="text" class="form-control" id="filtroNombre">
                         </div>
@@ -108,8 +118,8 @@
                             <input type="text" class="form-control" id="filtroUsuario">
                         </div>
                         <div class="mb-3">
-                            <label for="filtroFecha" class="form-label">Fecha de Creación</label>
-                            <input type="date" class="form-control" id="filtroFecha">
+                            <label class="form-label">Resultados encontrados:</label>
+                            <div id="resultadosEncontrados">0</div>
                         </div>
                         <div class="d-flex justify-content-between">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -123,6 +133,7 @@
             </div>
         </div>
     </div>
+
     
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
@@ -132,5 +143,3 @@
     <script src="../js/descargarReporte.js"></script>
 </body>
 </html>
-
-

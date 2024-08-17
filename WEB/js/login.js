@@ -1,12 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
     const ingresarBtn = document.getElementById('ingresarBtn');
     const regresarBtn = document.getElementById('regresarBtn');
-    
 
     regresarBtn.addEventListener('click', () => {
         window.location.href = '../index.html';
     });
-    
 
     ingresarBtn.addEventListener('click', verificar);
 });
@@ -53,9 +51,11 @@ const verificar = () => {
     .then(data => {
         console.log('Inicio de sesión exitoso:', data);
         const user = data.user;
+        const token = data.token;
         alert("Bienvenido");
 
         localStorage.setItem("usuario", JSON.stringify(user));
+        localStorage.setItem("token", token);
 
         if (user.tipo_usuario === 'estudiante') {
             window.location.href = "../html/pgnUsuarios.html";
@@ -72,3 +72,4 @@ const verificar = () => {
         alert(error.message);
     });
 };
+
